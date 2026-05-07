@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>MOZZXITERS CYBER PRO</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #030d08;
+    --bg2: #061410;
+    --card: #071a12;
+    --card2: #0a2018;
+    --border: #0f3d22;
+    --accent: #1aff6e;
+    --accent2: #0dcc55;
+    --accent3: #07a040;
+    --accent-dim: #0a4d22;
+    --accent-glow: rgba(26,255,110,0.15);
+    --accent-glow2: rgba(26,255,110,0.05);
+    --text: #c8ffe0;
+    --text2: #7ab892;
+    --text3: #3d6b50;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html, body {
+    width:100%; height:100%;
+    background: var(--bg);
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ===== SPLASH SCREEN ===== */
+  #splash {
+    position: fixed; inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease;
+  }
+  #splash.hide { opacity:0; pointer-events:none; }
+
+  .splash-logo {
+    position: relative;
+    width: 130px; height: 130px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 32px;
+  }
+  .splash-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid;
+    animation: spinRing linear infinite;
+  }
+  .splash-ring:nth-child(1) {
+    width: 130px; height: 130px;
+    border-color: rgba(26,255,110,0.25);
+    animation-duration: 8s;
+  }
+  .splash-ring:nth-child(2) {
+    width: 108px; height: 108px;
+    border-color: rgba(26,255,110,0.15);
+    animation-duration: 5s;
+    animation-direction: reverse;
+  }
+  .splash-ring:nth-child(3) {
+    width: 86px; height: 86px;
+    border-color: rgba(26,255,110,0.4);
+    border-top-color: var(--accent);
+    animation-duration: 3s;
+  }
+  @keyframes spinRing { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  .splash-ring-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    top: -4px; left: 50%; transform: translateX(-50%);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .splash-m {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 42px; font-weight: 900;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent2);
+    animation: mPulse 2s ease-in-out infinite;
+    z-index: 1;
+  }
+  @keyframes mPulse {
+    0%,100%{text-shadow:0 0 20px var(--accent),0 0 40px var(--accent2)}
+    50%{text-shadow:0 0 30px var(--accent),0 0 60px var(--accent2),0 0 80px var(--accent3)}
+  }
+
+  .splash-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent2);
+    margin-bottom: 4px;
+  }
+  .splash-sub {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 6px;
+    color: var(--text2);
+    margin-bottom: 4px;
+  }
+  .splash-edition {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: var(--text3);
+    margin-bottom: 48px;
+  }
+
+  .splash-bar-wrap { width: 240px; }
+  .splash-bar-track {
+    width: 100%; height: 3px;
+    background: rgba(26,255,110,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .splash-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    border-radius: 2px;
+    width: 0%;
+    box-shadow: 0 0 8px var(--accent);
+    transition: width 0.1s linear;
+  }
+  .splash-bar-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--text3);
+  }
+  #splash-pct { color: var(--accent2); }
+
+  /* ===== MAIN APP ===== */
+  #app {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #app.show { opacity:1; }
+
+  /* TOP BAR - fixed */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, rgba(3,13,8,0.98) 80%, transparent);
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .topbar-inner {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .topbar-avatar {
+    width: 40px; height: 40px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px; font-weight: 700;
+    color: var(--accent);
+    border: 1.5px solid var(--accent3);
+    box-shadow: 0 0 10px rgba(26,255,110,0.2);
+    flex-shrink: 0;
+  }
+  .topbar-info { flex: 1; }
+  .topbar-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .topbar-tier {
+    font-size: 10px; font-weight: 500;
+    color: var(--text3); letter-spacing: 2px;
+  }
+  .topbar-badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px; font-weight: 600;
+    letter-spacing: 1.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .badge-tier { color: var(--accent2); border-color: var(--accent3); background: rgba(26,255,110,0.06); }
+  .badge-online {
+    color: var(--accent); border-color: var(--accent3);
+    background: rgba(26,255,110,0.1);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .online-dot {
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--accent);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .badge-ver { color: var(--text3); border-color: var(--border); background: transparent; }
+
+  /* SCROLL CONTENT */
+  #scroll {
+    margin-top: 72px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  #scroll::-webkit-scrollbar { display:none; }
+
+  .section-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 5px;
+    color: var(--accent2);
+    text-align: center;
+    padding: 20px 0 12px;
+    position: relative;
+  }
+  .section-label::before, .section-label::after {
+    content:'';
+    position: absolute;
+    top: 50%; height: 1px;
+    width: 22%;
+    background: linear-gradient(90deg, transparent, var(--accent3));
+  }
+  .section-label::before { left: 5%; }
+  .section-label::after { right: 5%; transform: scaleX(-1); }
+
+  /* LAUNCH CARDS */
+  .launch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 14px 4px;
+  }
+  .launch-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 14px 16px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .launch-card::before {
+    content:'';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(26,255,110,0.06), transparent 70%);
+  }
+  .launch-card:active { transform: scale(0.96); background: var(--card2); }
+  .launch-icon {
+    width: 44px; height: 44px;
+    background: rgba(26,255,110,0.08);
+    border: 1.5px solid var(--accent3);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .launch-icon svg { width:22px; height:22px; fill:none; stroke:var(--accent); stroke-width:1.5; }
+  .launch-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    text-align: center;
+  }
+  .launch-sub {
+    font-size: 9px; letter-spacing: 1px;
+    color: var(--text3);
+    text-align: center;
+  }
+  .launch-pkg {
+    font-size: 7px; color: var(--text3);
+    letter-spacing: 0.5px; opacity: 0.5;
+    text-align: center;
+    margin-top: -4px;
+  }
+  .max-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent3);
+    border-radius: 5px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 7px; font-weight: 700;
+    color: var(--accent); padding: 2px 5px;
+    letter-spacing: 1px;
+  }
+
+  /* CONFIG CARDS */
+  .config-list {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 0 14px;
+  }
+  .config-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 14px;
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color 0.2s;
+  }
+  .config-card.active-card { border-color: var(--accent3); }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .status-dot.on {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .config-icon {
+    width: 38px; height: 38px;
+    background: rgba(26,255,110,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .config-card.active-card .config-icon {
+    background: rgba(26,255,110,0.12);
+    border-color: var(--accent3);
+  }
+  .config-icon svg { width:18px; height:18px; }
+  .config-info { flex: 1; min-width: 0; }
+  .config-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 3px;
+    transition: color 0.3s;
+  }
+  .config-card.active-card .config-name { color: var(--accent); }
+  .config-desc {
+    font-size: 10px; line-height: 1.4;
+    color: var(--text3); letter-spacing: 0.3px;
+  }
+  .config-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 7px; letter-spacing: 1.5px;
+    color: var(--text3); border: 1px solid var(--border);
+    padding: 2px 6px; border-radius: 4px;
+    flex-shrink: 0;
+    margin-right: 6px;
+    transition: all 0.3s;
+  }
+  .config-card.active-card .config-tag {
+    color: var(--accent2); border-color: var(--accent3);
+  }
+
+  /* TOGGLE */
+  .toggle-wrap { flex-shrink: 0; cursor: pointer; }
+  .toggle {
+    width: 44px; height: 26px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 13px;
+    position: relative;
+    transition: background 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .toggle.on {
+    background: var(--accent3);
+    border-color: var(--accent2);
+    box-shadow: 0 0 10px rgba(26,255,110,0.3);
+  }
+  .toggle-knob {
+    position: absolute;
+    width: 20px; height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+  .toggle.on .toggle-knob { transform: translateX(18px); }
+
+  /* TERMINAL */
+  .terminal-wrap {
+    margin: 16px 14px 0;
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .terminal-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .terminal-dots { display: flex; gap: 6px; }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-red { background: #ff5f57; }
+  .t-yellow { background: #febc2e; }
+  .t-green { background: #28c840; }
+  .terminal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px; letter-spacing: 3px; color: var(--text3);
+  }
+  .terminal-idle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px; letter-spacing: 2px;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 4px;
+    transition: all 0.3s;
+  }
+  .terminal-body { padding: 12px 14px; min-height: 50px; }
+  .terminal-line {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+  }
+  .terminal-line::before { content: '> '; color: var(--accent3); }
+  .cursor {
+    display: inline-block;
+    width: 7px; height: 12px;
+    background: var(--accent);
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  /* INJECT BUTTON */
+  .inject-btn {
+    display: flex; align-items: center; gap: 8px;
+    width: calc(100% - 28px);
+    margin: 10px 14px 0;
+    padding: 13px 18px;
+    background: linear-gradient(135deg, #071a12 0%, #0a2a18 100%);
+    border: 1.5px solid var(--accent3);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--accent);
+    transition: all 0.2s ease;
+    position: relative; overflow: hidden;
+  }
+  .inject-btn::before {
+    content:'';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(26,255,110,0.08), transparent);
+  }
+  .inject-btn:active { transform: scale(0.97); }
+  .inject-btn.injecting {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(26,255,110,0.3), 0 0 40px rgba(26,255,110,0.1);
+    animation: injectPulse 0.4s ease;
+  }
+  @keyframes injectPulse {
+    0%{box-shadow:0 0 0 rgba(26,255,110,0)}
+    50%{box-shadow:0 0 30px rgba(26,255,110,0.5),0 0 60px rgba(26,255,110,0.2)}
+    100%{box-shadow:0 0 20px rgba(26,255,110,0.3),0 0 40px rgba(26,255,110,0.1)}
+  }
+  .inject-icon {
+    width: 28px; height: 28px;
+    background: rgba(26,255,110,0.1);
+    border: 1px solid var(--accent3);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .inject-icon svg { width:16px; height:16px; }
+  .inject-label { flex: 1; }
+  .inject-sublabel {
+    font-size: 7px; font-weight: 400;
+    letter-spacing: 2px; color: var(--text3);
+    display: block; margin-top: 2px;
+  }
+  .inject-arrow {
+    font-size: 14px; color: var(--accent3);
+    animation: arrowBounce 1.5s ease-in-out infinite;
+  }
+  @keyframes arrowBounce { 0%,100%{transform:translateX(0)} 50%{transform:translateX(4px)} }
+
+  /* INJECT OVERLAY */
+  #inject-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 500;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #inject-overlay.show { opacity: 1; pointer-events: all; }
+
+  .inject-visual {
+    position: relative;
+    width: 200px; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+  }
+  .inject-ring {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(26,255,110,0.3);
+    animation: expandRing linear infinite;
+  }
+  .ir1 { width:200px;height:200px; animation-duration:2s; }
+  .ir2 { width:160px;height:160px; animation-duration:2s; animation-delay:0.3s; border-color:rgba(26,255,110,0.5); }
+  .ir3 { width:120px;height:120px; animation-duration:2s; animation-delay:0.6s; border-color:rgba(26,255,110,0.7); }
+  @keyframes expandRing {
+    0%{transform:scale(0.6);opacity:1}
+    100%{transform:scale(1.4);opacity:0}
+  }
+
+  .inject-hex {
+    width: 80px; height: 80px;
+    background: rgba(26,255,110,0.08);
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(26,255,110,0.4), 0 0 60px rgba(26,255,110,0.15);
+    animation: hexPulse 1s ease-in-out infinite;
+    z-index: 1;
+  }
+  @keyframes hexPulse {
+    0%,100%{box-shadow:0 0 20px rgba(26,255,110,0.3),0 0 40px rgba(26,255,110,0.1)}
+    50%{box-shadow:0 0 40px rgba(26,255,110,0.6),0 0 80px rgba(26,255,110,0.3)}
+  }
+  .inject-hex svg { width:36px;height:36px; }
+
+  .inject-scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.8;
+    animation: scanLine 1.2s linear infinite;
+  }
+  @keyframes scanLine {
+    0%{top:0;opacity:0.8}
+    50%{opacity:1}
+    100%{top:100%;opacity:0}
+  }
+
+  .inject-title-big {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px; font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .inject-subtitle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px; letter-spacing: 4px;
+    color: var(--text3);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .inject-progress-wrap { width: 220px; margin-bottom: 12px; }
+  .inject-progress-track {
+    height: 4px;
+    background: rgba(26,255,110,0.1);
+    border-radius: 2px; overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .inject-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    width: 0%;
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--accent);
+    transition: width 0.05s linear;
+  }
+  .inject-progress-labels {
+    display: flex; justify-content: space-between;
+    font-size: 9px; letter-spacing: 2px; color: var(--text3);
+  }
+  #inject-pct { color: var(--accent2); }
+
+  .inject-log {
+    width: 260px;
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    min-height: 64px;
+  }
+  .inject-log-line {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+  .inject-log-line::before { content: '> '; color: var(--accent3); }
+
+  .inject-close-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text3);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .inject-close-btn:hover, .inject-close-btn:active {
+    color: var(--accent); border-color: var(--accent3);
+  }
+  .inject-close-btn.visible { display: block; }
+  .inject-close-btn.hidden { display: none; }
+
+  /* PARTICLES */
+  .particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: floatParticle linear forwards;
+  }
+  @keyframes floatParticle {
+    0%{opacity:1;transform:translate(0,0) scale(1)}
+    100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}
+  }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">
+    <div class="splash-ring"></div>
+    <div class="splash-ring"></div>
+    <div class="splash-ring" style="position:relative;">
+      <div class="splash-ring-dot"></div>
+    </div>
+    <div class="splash-m">M</div>
+  </div>
+  <div class="splash-name">MOZZXITERS</div>
+  <div class="splash-sub">CYBER PRO</div>
+  <div class="splash-edition">FREE FIRE · iOS EDITION</div>
+  <div class="splash-bar-wrap">
+    <div class="splash-bar-track">
+      <div class="splash-bar-fill" id="bar-fill"></div>
+    </div>
+    <div class="splash-bar-labels">
+      <span>LOADING CYBER MODULE...</span>
+      <span id="splash-pct">0%</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div id="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-avatar">M</div>
+      <div class="topbar-info">
+        <div class="topbar-name">MOZZXITERS</div>
+        <div class="topbar-tier">CYBER PRO</div>
+      </div>
+      <div class="topbar-badges">
+        <div class="badge badge-tier">CYBER TIER</div>
+        <div class="badge badge-online"><div class="online-dot"></div>ONLINE</div>
+        <div class="badge badge-ver">v1.0.0</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="scroll">
+
+    <div class="section-label">LAUNCH GAME</div>
+
+    <div class="launch-grid">
+      <a href="freefire://" class="launch-card">
+        <div class="launch-icon">
+          <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>
+        </div>
+        <div class="launch-title">FREE FIRE</div>
+        <div class="launch-sub">OPEN GAME</div>
+        <div class="launch-pkg">com.garena.game.fof</div>
+      </a>
+      <a href="freefire://" class="launch-card">
+        <div class="max-badge">MAX</div>
+        <div class="launch-icon">
+          <svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>
+        </div>
+        <div class="launch-title">FREE FIRE MAX</div>
+        <div class="launch-sub">OPEN GAME</div>
+        <div class="launch-pkg">com.garena.game.ffmax</div>
+      </a>
+    </div>
+
+    <div class="section-label">SYSTEM CONFIGURATION</div>
+
+    <div class="config-list">
+
+      <div class="config-card" id="c0">
+        <div class="status-dot" id="sd0"></div>
+        <div class="config-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5">
+            <path d="M3 5h18M3 12h18M3 19h18"/>
+          </svg>
+        </div>
+        <div class="config-info">
+          <div class="config-name">SMOOTH DRAG CONFIG</div>
+          <div class="config-desc">Optimize drag-shot sensitivity curve for fluid & precise movement</div>
+        </div>
+        <div class="config-tag">DRAG</div>
+        <div class="toggle-wrap" onclick="toggleSwitch(0)">
+          <div class="toggle" id="t0"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+
+      <div class="config-card" id="c1">
+        <div class="status-dot" id="sd1"></div>
+        <div class="config-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5">
+            <circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>
+            <line x1="12" y1="4" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="20"/>
+            <line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/>
+          </svg>
+        </div>
+        <div class="config-info">
+          <div class="config-name">SENSITIVITY PRO</div>
+          <div class="config-desc">Fine-tune all scope & general sensitivity with precision profiles</div>
+        </div>
+        <div class="config-tag">SENS</div>
+        <div class="toggle-wrap" onclick="toggleSwitch(1)">
+          <div class="toggle" id="t1"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+
+      <div class="config-card" id="c2">
+        <div class="status-dot" id="sd2"></div>
+        <div class="config-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="12" cy="12" r="3"/>
+            <line x1="12" y1="3" x2="12" y2="7"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <line x1="3" y1="12" x2="7" y2="12"/>
+            <line x1="17" y1="12" x2="21" y2="12"/>
+          </svg>
+        </div>
+        <div class="config-info">
+          <div class="config-name">SCOPE AIM TUNER</div>
+          <div class="config-desc">Fine-tune scope zoom transition speed & aim stabilization per scope level</div>
+        </div>
+        <div class="config-tag">SCOPE</div>
+        <div class="toggle-wrap" onclick="toggleSwitch(2)">
+          <div class="toggle" id="t2"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+
+      <div class="config-card" id="c3">
+        <div class="status-dot" id="sd3"></div>
+        <div class="config-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5">
+            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+          </svg>
+        </div>
+        <div class="config-info">
+          <div class="config-name">TRACK FLOW CONFIG</div>
+          <div class="config-desc">Adjust aim tracking curve & follow speed for moving target alignment</div>
+        </div>
+        <div class="config-tag">TRACK</div>
+        <div class="toggle-wrap" onclick="toggleSwitch(3)">
+          <div class="toggle" id="t3"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+
+      <div class="config-card" id="c4">
+        <div class="status-dot" id="sd4"></div>
+        <div class="config-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="1.5">
+            <circle cx="12" cy="12" r="2"/>
+            <line x1="12" y1="2" x2="12" y2="7"/>
+            <line x1="12" y1="17" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="7" y2="12"/>
+            <line x1="17" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+        <div class="config-info">
+          <div class="config-name">CROSSHAIR PRESET</div>
+          <div class="config-desc">Set crosshair anchor point & convergence offset for consistent aim placement</div>
+        </div>
+        <div class="config-tag">AIM</div>
+        <div class="toggle-wrap" onclick="toggleSwitch(4)">
+          <div class="toggle" id="t4"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-label">CYBER TERMINAL</div>
+
+    <div class="terminal-wrap" style="margin:0 14px;">
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <div class="terminal-dot t-red"></div>
+          <div class="terminal-dot t-yellow"></div>
+          <div class="terminal-dot t-green"></div>
+        </div>
+        <div class="terminal-title">PROCESS MONITOR</div>
+        <div class="terminal-idle" id="terminal-status">IDLE</div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line" id="terminal-text">MOZZXITERS CYBER PRO v1.0.0<span class="cursor"></span></div>
+      </div>
+    </div>
+
+    <button class="inject-btn" id="inject-btn" onclick="startInject()">
+      <div class="inject-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5">
+          <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+        </svg>
+      </div>
+      <div class="inject-label">
+        INJECT
+        <span class="inject-sublabel">PUSH CONFIG TO GAME</span>
+      </div>
+      <span class="inject-arrow">&#8250;</span>
+    </button>
+
+  </div><!-- end #scroll -->
+</div><!-- end #app -->
+
+<!-- INJECT OVERLAY -->
+<div id="inject-overlay">
+  <div class="inject-visual">
+    <div class="inject-ring ir1"></div>
+    <div class="inject-ring ir2"></div>
+    <div class="inject-ring ir3"></div>
+    <div class="inject-hex">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="inject-scan-line"></div>
+  </div>
+
+  <div class="inject-title-big" id="inject-main-title">INJECTING...</div>
+  <div class="inject-subtitle" id="inject-phase-label">INITIALIZING MODULE</div>
+
+  <div class="inject-progress-wrap">
+    <div class="inject-progress-track">
+      <div class="inject-progress-fill" id="inject-fill"></div>
+    </div>
+    <div class="inject-progress-labels">
+      <span id="inject-status-txt">LOADING...</span>
+      <span id="inject-pct">0%</span>
+    </div>
+  </div>
+
+  <div class="inject-log">
+    <div class="inject-log-line" id="log1"></div>
+    <div class="inject-log-line" id="log2"></div>
+    <div class="inject-log-line" id="log3"></div>
+  </div>
+
+  <button class="inject-close-btn hidden" id="inject-close" onclick="closeInject()">CLOSE</button>
+</div>
+
+<script>
+  // ---- CLICK SOUND ----
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  function playClick(isOn) {
+    try {
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(isOn ? 880 : 440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(isOn ? 1200 : 300, ctx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.12);
+    } catch(e){}
+  }
+
+  function playInjectSound() {
+    try {
+      const ctx = new AudioCtx();
+      [0,0.1,0.2,0.35].forEach((t,i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        const freqs = [300,500,700,1000];
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freqs[i], ctx.currentTime+t);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime+t);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+t+0.08);
+        osc.start(ctx.currentTime+t);
+        osc.stop(ctx.currentTime+t+0.08);
+      });
+    } catch(e){}
+  }
+
+  function playSuccessSound() {
+    try {
+      const ctx = new AudioCtx();
+      [[0,880],[0.12,1100],[0.24,1320]].forEach(([t,f]) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, ctx.currentTime+t);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime+t);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+t+0.15);
+        osc.start(ctx.currentTime+t);
+        osc.stop(ctx.currentTime+t+0.15);
+      });
+    } catch(e){}
+  }
+
+  // ---- TOGGLE ----
+  const states = [false,false,false,false,false];
+  const terminalMsgs = [
+    'SMOOTH_DRAG.cfg applied',
+    'SENSITIVITY_PRO.cfg applied',
+    'SCOPE_AIM_TUNER.cfg applied',
+    'TRACK_FLOW.cfg applied',
+    'CROSSHAIR_PRESET.cfg applied'
+  ];
+
+  function toggleSwitch(i) {
+    states[i] = !states[i];
+    const on = states[i];
+    playClick(on);
+    const tog = document.getElementById('t'+i);
+    const dot = document.getElementById('sd'+i);
+    const card = document.getElementById('c'+i);
+    tog.classList.toggle('on', on);
+    dot.classList.toggle('on', on);
+    card.classList.toggle('active-card', on);
+    updateTerminal(on ? terminalMsgs[i] : terminalMsgs[i].replace('applied','removed'), on ? 'ACTIVE' : 'IDLE', on);
+  }
+
+  function updateTerminal(msg, status, on) {
+    const tstatus = document.getElementById('terminal-status');
+    const ttext = document.getElementById('terminal-text');
+    if(tstatus) {
+      tstatus.textContent = status;
+      tstatus.style.color = on ? 'var(--accent)' : '';
+      tstatus.style.borderColor = on ? 'var(--accent3)' : '';
+    }
+    if(ttext) ttext.innerHTML = msg + '<span class="cursor"></span>';
+  }
+
+  // ---- INJECT ----
+  const injectLogs = [
+    'Connecting to game process...',
+    'Allocating memory buffer...',
+    'Patching sensitivity table...',
+    'Writing drag config bytes...',
+    'Injecting scope params...',
+    'Flushing aim cache...',
+    'Verifying CRC checksum...',
+    'Config applied successfully!'
+  ];
+  const injectPhases = [
+    [0,25,'CONNECTING...','SCANNING PROCESS'],
+    [25,55,'PATCHING...','WRITING MEMORY'],
+    [55,85,'INJECTING...','APPLYING CONFIG'],
+    [85,100,'VERIFYING...','CRC CHECK']
+  ];
+
+  let injectRunning = false;
+  let injectPct = 0;
+  let injectTimer = null;
+  let logIndex = 0;
+
+  function startInject() {
+    if(injectRunning) return;
+    injectRunning = true;
+    injectPct = 0;
+    logIndex = 0;
+
+    const overlay = document.getElementById('inject-overlay');
+    const btn = document.getElementById('inject-btn');
+    const ifill = document.getElementById('inject-fill');
+    const ipct = document.getElementById('inject-pct');
+    const ititle = document.getElementById('inject-main-title');
+    const iphase = document.getElementById('inject-phase-label');
+    const istxt = document.getElementById('inject-status-txt');
+    const iclose = document.getElementById('inject-close');
+
+    ifill.style.width = '0%';
+    ipct.textContent = '0%';
+    ititle.textContent = 'INJECTING...';
+    ititle.style.color = 'var(--accent)';
+    iphase.textContent = 'INITIALIZING MODULE';
+    istxt.textContent = 'CONNECTING...';
+    iclose.className = 'inject-close-btn hidden';
+    document.getElementById('log1').textContent = '';
+    document.getElementById('log2').textContent = '';
+    document.getElementById('log3').textContent = '';
+
+    btn.classList.add('injecting');
+    overlay.classList.add('show');
+    playInjectSound();
+
+    updateTerminal('INJECT sequence started...', 'INJECT', true);
+
+    function tickInject() {
+      if(injectPct >= 100) {
+        ifill.style.width = '100%';
+        ipct.textContent = '100%';
+        ititle.textContent = 'SUCCESS!';
+        ititle.style.color = '#1aff6e';
+        ititle.style.textShadow = '0 0 30px #1aff6e';
+        iphase.textContent = 'INJECTION COMPLETE';
+        istxt.textContent = 'DONE';
+        document.getElementById('log3').textContent = injectLogs[7];
+        iclose.className = 'inject-close-btn visible';
+        btn.classList.remove('injecting');
+        injectRunning = false;
+        playSuccessSound();
+        updateTerminal('Inject complete. All configs active.', 'DONE', true);
+        return;
+      }
+
+      const step = Math.random() * 3 + 0.8;
+      injectPct = Math.min(100, injectPct + step);
+      const p = Math.floor(injectPct);
+      ifill.style.width = p + '%';
+      ipct.textContent = p + '%';
+
+      // phase label
+      for(const [start,end,status,phase] of injectPhases) {
+        if(p >= start && p < end) {
+          iphase.textContent = phase;
+          istxt.textContent = status;
+          break;
+        }
+      }
+
+      // logs
+      const logThresholds = [5,15,28,42,58,72,86,96];
+      if(logIndex < logThresholds.length && p >= logThresholds[logIndex]) {
+        const lines = ['log1','log2','log3'];
+        document.getElementById(lines[0]).textContent = document.getElementById(lines[1]).textContent;
+        document.getElementById(lines[1]).textContent = document.getElementById(lines[2]).textContent;
+        document.getElementById(lines[2]).textContent = injectLogs[logIndex];
+        logIndex++;
+      }
+
+      const delay = injectPct < 40 ? 60 : injectPct < 80 ? 40 : 80;
+      injectTimer = setTimeout(tickInject, delay);
+    }
+
+    setTimeout(tickInject, 300);
+  }
+
+  function closeInject() {
+    const overlay = document.getElementById('inject-overlay');
+    overlay.classList.remove('show');
+    updateTerminal('System idle. Ready for next inject.', 'IDLE', false);
+  }
+
+  // ---- SPLASH LOADING ----
+  let pct = 0;
+  const fill = document.getElementById('bar-fill');
+  const pctEl = document.getElementById('splash-pct');
+  const splash = document.getElementById('splash');
+  const app = document.getElementById('app');
+
+  function tick() {
+    if (pct >= 100) {
+      splash.classList.add('hide');
+      app.classList.add('show');
+      setTimeout(() => splash.style.display='none', 700);
+      return;
+    }
+    const step = Math.random() * 4 + 1;
+    pct = Math.min(100, pct + step);
+    fill.style.width = pct + '%';
+    pctEl.textContent = Math.floor(pct) + '%';
+    const delay = pct < 30 ? 80 : pct < 70 ? 50 : pct < 90 ? 70 : 120;
+    setTimeout(tick, delay);
+  }
+
+  setTimeout(tick, 400);
+</script>
+</body>
+</html>
